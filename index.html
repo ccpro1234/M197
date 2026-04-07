@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Meta Pattern Engine • Premium Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --bg:#05070f;
+ --panel:rgba(15,23,42,.75);
+ --glass:rgba(255,255,255,.04);
+ --line:rgba(255,255,255,.08);
+ --gold:#facc15;
+ --blue:#3b82f6;
+ --red:#ef4444;
+ --green:#22c55e;
+ --orange:#fb923c;
+}
+
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:radial-gradient(circle at top,#0b1224 0%,#05070f 70%);
+ color:#e5e7eb;
+ font-family:'Kanit',sans-serif;
+}
+
+/* LOGIN */
+.login-screen{
+ position:fixed; inset:0;
+ display:flex; align-items:center; justify-content:center;
+ background:radial-gradient(circle at top,#0b1224 0%,#05070f 70%);
+ z-index:9999;
+}
+.login-box{
+ width:380px; padding:40px;
+ border-radius:20px;
+ background:rgba(15,23,42,.85);
+ border:1px solid rgba(255,255,255,.08);
+ box-shadow:0 20px 60px rgba(0,0,0,.7);
+ text-align:center;
+}
+.login-box h2{color:var(--gold)}
+.login-box input{
+ width:100%; padding:14px; margin-bottom:18px;
+ border-radius:12px;
+ border:1px solid rgba(255,255,255,.1);
+ background:#0f172a; color:#fff;
+}
+.login-box button{
+ width:100%; padding:14px;
+ border-radius:12px; border:none;
+ background:linear-gradient(135deg,#2563eb,#1e40af);
+ color:#fff; font-weight:700;
+ cursor:pointer;
+}
+.login-error{color:#ef4444;display:none;margin-top:10px}
+
+/* APP */
+.container{max-width:1600px;margin:auto;padding:30px;display:none}
+
+.expire-bar{
+ background:rgba(250,204,21,.1);
+ border:1px solid rgba(250,204,21,.3);
+ padding:14px;
+ border-radius:14px;
+ margin-bottom:20px;
+ text-align:center;
+ font-weight:700;
+ color:var(--gold);
+}
+
+.panel{
+ background:var(--panel);
+ backdrop-filter:blur(12px);
+ border:1px solid var(--line);
+ border-radius:22px;
+ padding:22px;
+ margin-bottom:24px;
+ box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+
+button{
+ padding:14px 22px;
+ border-radius:14px;
+ border:1px solid rgba(255,255,255,.1);
+ font-weight:700;
+ cursor:pointer;
+ color:#fff;
+}
+.p{background:linear-gradient(135deg,#2563eb,#1e40af)}
+.b{background:linear-gradient(135deg,#dc2626,#7f1d1d)}
+.t{background:linear-gradient(135deg,#16a34a,#065f46)}
+.u{background:#374151}
+.c{background:#000;border:1px solid #64748b}
+
+.counter{display:flex;gap:40px;font-weight:600}
+.counter span{color:var(--gold);margin-left:6px}
+
+.beadroad{
+ display:grid;
+ grid-auto-flow:column;
+ grid-template-rows:repeat(6,32px);
+ grid-auto-columns:32px;
+}
+.bead{
+ width:32px;height:32px;border-radius:50%;
+ display:flex;align-items:center;justify-content:center;
+ font-weight:700;font-size:14px;
+}
+.B{background:var(--red)}
+.P{background:var(--blue)}
+.T{background:var(--green)}
+
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px;border-bottom:1px solid var(--line);text-align:center}
+th{background:var(--glass);color:#94a3b8}
+
+.resultRow{
+ display:grid;
+ grid-template-columns:repeat(15,22px);
+ gap:4px;
+ justify-content:center;
+}
+.ok{background:var(--green);color:#000;border-radius:5px}
+.no{background:var(--red);color:#fff;border-radius:5px}
+
+.high{background:rgba(34,197,94,.1)}
+.mode-direct{color:var(--blue);font-weight:700}
+.bet-info{color:var(--gold);font-weight:700}
+
+@keyframes blink{
+ 0%,100%{transform:scale(1.5);opacity:1}
+ 50%{opacity:.25}
+}
+
+.blink{
+ animation:blink 1s infinite;
+ text-shadow:0 0 14px rgba(250,204,21,.9);
+}
+
+
+.lock-screen{
+ position:fixed; inset:0;
+ background:#000;
+ display:flex; align-items:center; justify-content:center;
+ color:#fff; font-size:22px; font-weight:700;
+ z-index:10000;
+ display:none;
+}
+
+/* ===== MARQUEE TITLE ===== */
+.marquee-box{
+ overflow:hidden;
+ white-space:nowrap;
+ width:100%;
+ margin-bottom:15px;
+}
+
+.marquee-text{
+ display:inline-block;
+ padding-left:100%;
+ animation: slideLeft 12s linear infinite;
+ font-weight:700;
+ color:#ff1a1a;
+
+text-shadow: 0 0 5px #ff0000,
+             0 0 15px #ff0000,
+             0 0 30px #ff0000,
+             0 0 60px #ff0000,
+             0 0 100px #ff0000;
+
+}
+
+@keyframes slideLeft{
+ 0%   { transform: translateX(0); }
+ 100% { transform: translateX(-100%); }
+
+}
+
+/* ===== LOGO ROBOT ===== */
+.logo-box{
+ text-align:center;
+ margin-bottom:10px;
+}
+
+.logo-box img{
+ width:200px;
+ max-width:100%;
+ filter: drop-shadow(0 0 10px rgba(250,204,21,.6))
+         drop-shadow(0 0 25px rgba(59,130,246,.5));
+ animation: floatLogo 4s ease-in-out infinite;
+}
+
+@keyframes floatLogo{
+ 0%,100%{transform:translateY(0px)}
+ 50%{transform:translateY(-8px)}
+}
+
+.control-panel{
+ position:relative;
+}
+
+.btn-row{
+ display:flex;
+ gap:8px;
+ align-items:center;
+ flex-wrap:wrap;
+}
+
+/* ===== QUICK VIEW (เล็ก เนียน ลอย ไม่โดนทับ) ===== */
+.quick-view-inline{
+ position:fixed;   /* ✅ เปลี่ยนตรงนี้ */
+ right:110px;      /* ปรับตามตำแหน่งปุ่ม CLEAR */
+ top:10px;
+
+ z-index:999;
+
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+
+ gap:6px;
+ padding:10px 16px;
+ border-radius:12px;
+
+ background:rgba(2,6,23,.95);
+ border:1px solid rgba(255,255,255,.1);
+
+ box-shadow:
+   0 0 10px rgba(59,130,246,.2),
+   0 0 20px rgba(250,204,21,.15);
+}
+
+.q-pattern{
+ font-size:12px;
+}
+
+.q-bet{
+ font-size:25px;
+ font-weight:800;
+}
+
+.q-percent{
+ font-size:15px;
+ font-weight:700;
+}
+
+/* blink */
+.quick-view-inline.blink{
+ animation:blink 1s infinite;
+}
+
+.q-title{
+ font-size:11px;
+ font-weight:700;
+ color:#facc15;
+ letter-spacing:1px;
+
+ text-align:center;      /* ✅ จัดกลาง */
+ width:100%;             /* ✅ ให้เต็มกล่อง */
+}
+
+.control-panel{
+ position:relative;   /* ✅ ให้ quick view อิงกรอบนี้ */
+}
+
+/* ===== QUICK RESULT ===== */
+.q-result-box{
+ margin-top:8px;
+ text-align:center;
+}
+
+.q-result-title{
+ font-size:11px;
+ color:#94a3b8;
+ margin-bottom:4px;
+}
+
+.q-result-grid{
+ display:grid;
+ grid-template-columns:repeat(7,18px); /* ✅ 7 ช่อง */
+ gap:4px;
+ justify-content:center;
+}
+
+.qr{
+ width:18px;
+ height:18px;
+ border-radius:4px;
+ font-size:11px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-weight:700;
+}
+
+.qr.ok{background:#22c55e;color:#000;}
+.qr.no{background:#ef4444;color:#fff;}
+
+.q-result-percent{
+ margin-top:4px;
+ font-size:12px;
+ font-weight:700;
+ color:#facc15;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="lock-screen" id="lockScreen">
+ โปรแกรมหมดอายุแล้ว<br>
+ กรุณาติดต่อผู้พัฒนา
+</div>
+
+<div class="login-screen" id="loginScreen">
+ <div class="login-box">
+  <h2>LOGIN SYSTEM</h2>
+  <input type="text" id="user" placeholder="Username">
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div class="login-error" id="error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+ </div>
+</div>
+
+<div class="container" id="app">
+
+<div class="expire-bar">
+ วันหมดอายุ : 19 เมษายน พ.ศ. 2569
+</div>
+
+<!-- ===== วางตรงนี้ ===== -->
+<div class="logo-box">
+  <img src="robotcouth4.png" alt="Robot Couth Logo">
+</div>
+<!-- ===== จบตำแหน่ง ===== -->
+
+<div class="marquee-box">
+  <h5 class="marquee-text">
+    วิเคราะห์เค้าไพ่ By อ.maxma
+  </h5>
+</div>
+
+
+
+<div class="panel control-panel">
+
+  <div class="btn-row">
+    <button class="p" onclick="add('P')">PLAYER</button>
+    <button class="b" onclick="add('B')">BANKER</button>
+    <button class="t" onclick="add('T')">TIE</button>
+    <button class="u" onclick="undo()">UNDO</button>
+    <button class="c" onclick="clearAll()">CLEAR</button>
+
+    <!-- ✅ ต้องอยู่ตรงนี้ -->
+    <div class="quick-view-inline" id="quickView">
+
+      <!-- ✅ RESULT TRACKING -->
+<div class="q-result-box">
+  <div class="q-result-title">Quick Result</div>
+  <div id="qResultGrid" class="q-result-grid"></div>
+  <div id="qResultPercent" class="q-result-percent">0%</div>
+</div>
+
+
+       <!-- 🔥 เพิ่มหัวข้อ -->
+  <div class="q-title">AI Quick View</div>
+     <!-- ข้อมูล -->
+  <div class="q-top">
+      <span class="q-pattern" id="qPattern">-</span>
+      <span class="q-bet" id="qBet">-</span>
+      <span class="q-percent" id="qPercent">0%</span>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="panel counter">
+<div>P <span id="cp">0</span></div>
+<div>B <span id="cb">0</span></div>
+<div>T <span id="ct">0</span></div>
+<div>TOTAL <span id="ctt">0</span></div>
+</div>
+
+<div class="panel">
+<h6>BEAD ROAD</h6>
+<div id="beadroad" class="beadroad"></div>
+</div>
+
+<div class="panel">
+<table>
+<thead>
+<tr>
+<th>สายเค้า</th>
+<th>ตัวแทง</th>
+<th>%</th>
+<th>โหมด / คำสั่งแทง</th>
+<th>ผล</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+/* ===== EXPIRE SYSTEM ===== */
+const expireDate = new Date("2026-04-19T23:59:59")
+
+if(new Date() > expireDate){
+ document.getElementById("lockScreen").style.display="flex"
+}
+
+/* ===== LOGIN ===== */
+function login(){
+ if(new Date() > expireDate){
+   document.getElementById("lockScreen").style.display="flex"
+   return
+ }
+ let u=user.value
+ let p=pass.value
+ if(u==="1234" && p==="1234"){
+  loginScreen.style.display="none"
+  app.style.display="block"
+ }else{
+  error.style.display="block"
+ }
+}
+
+/* ===== ORIGINAL LOGIC 100% ===== */
+
+let history=[]
+// ✅ QUICK VIEW TRACK
+let qTrack = []
+let lastQBet = null
+let count={P:0,B:0,T:0}
+
+
+const patterns=[
+"ตามยาว","ตัดยาว","ปิงปอง","2 ตัด 1","2 ตัด 2","แรงเหวี่ยงสั้น","3 ตัด 3",
+"3-1-3","มังกร","หลอกมังกร","สลับคู่","ผสม / NA",
+"หลอก 2 ครั้งแล้วสวน",
+
+]
+let data=patterns.map(()=>({pick:null,results:[]}))
+
+function nonTie(){return history.filter(x=>x!=='T')}
+function flip(x){return x==='B'?'P':'B'}
+
+function runCount(){
+ let h=nonTie()
+ if(!h.length) return {side:null,len:0}
+ let side=h[h.length-1],len=1
+ for(let i=h.length-2;i>=0;i--){
+  if(h[i]===side) len++; else break
+ }
+ return {side,len}
+}
+
+function decide(name){
+ let run=runCount()
+ let h=nonTie()
+ switch(name){
+  case "ตามยาว": return run.len>=2?run.side:null
+  case "ตัดยาว": return run.len>=3?flip(run.side):null
+  case "ปิงปอง":
+    if(h.length>=2 && h[h.length-1]!==h[h.length-2])
+      return h[h.length-2]
+    return null
+  case "2 ตัด 1": return run.len===2?flip(run.side):null
+
+case "2 ตัด 2":
+  if(h.length >= 4){
+    let last4 = h.slice(-4)
+
+    // BBPP → แทง B
+    if(last4[0]==='B' && last4[1]==='B' && last4[2]==='P' && last4[3]==='P')
+      return 'B'
+
+    // PPBB → แทง P
+    if(last4[0]==='P' && last4[1]==='P' && last4[2]==='B' && last4[3]==='B')
+      return 'P'
+  }
+  return null
+
+  case "แรงเหวี่ยงสั้น":
+
+  let h6 = nonTie()
+
+  if(h6.length < 2){
+    // 🔥 บังคับมีค่า → เปิดเกม
+    return 'B'
+  }
+
+  let last = h6[h6.length-1]
+  let prev = h6[h6.length-2]
+
+  // เหมือน → ตาม
+  if(last === prev){
+    return last
+  }
+
+  // ต่าง → เอาตัวก่อนหน้า
+  return prev
+
+
+case "3 ตัด 3": return run.len===3?flip(run.side):null
+
+  case "3-1-3":
+  if(h.length >= 5){
+    let last5 = h.slice(-5)
+
+    // AAA B A  หรือ  BBB P B
+    if(
+      last5[0]===last5[1] &&
+      last5[1]===last5[2] &&
+      last5[3]!==last5[2] &&
+      last5[4]===last5[2]
+    ){
+      return last5[2]
+    }
+  }
+  return null
+
+  case "มังกร": return run.len>=4?run.side:null
+  case "หลอกมังกร": return run.len>=5?flip(run.side):null
+  case "สลับคู่":
+  if(h.length >= 4){
+    let last4 = h.slice(-4)
+
+    if(
+      last4[0]===last4[1] &&
+      last4[2]===last4[3] &&
+      last4[0]!==last4[2]
+    ){
+      return flip(last4[3])
+    }
+  }
+  return null
+
+case "ผสม / NA":
+  if(h.length < 4) return null
+
+  let last4 = h.slice(-4).join("")
+  
+  // ถ้าเป็นสลับแบบ BPBP หรือ PBPB → เล่นตามจังหวะ
+  if(last4==="BPBP") return "B"
+  if(last4==="PBPB") return "P"
+
+  // ถ้าเป็นคู่ๆ BBPP หรือ PPBB → สวน
+  if(last4==="BBPP") return flip("P")
+  if(last4==="PPBB") return flip("B")
+
+  return null
+
+  case "หลอก 2 ครั้งแล้วสวน":
+
+  if(h.length >= 4){
+    let last4 = h.slice(-4)
+
+    // P P B P → แทง B
+    if(
+      last4[0]==='P' &&
+      last4[1]==='P' &&
+      last4[2]==='B' &&
+      last4[3]==='P'
+    ){
+      return 'B'
+    }
+
+    // B B P B → แทง P
+    if(
+      last4[0]==='B' &&
+      last4[1]==='B' &&
+      last4[2]==='P' &&
+      last4[3]==='B'
+    ){
+      return 'P'
+    }
+
+  }
+
+  return null
+
+
+
+
+  default:return null
+ }
+}
+
+
+
+function add(x){
+
+ // ===== ✅ เช็คผล QUICK VIEW ก่อนเพิ่ม =====
+ if(lastQBet && x !== 'T'){
+   qTrack.push(x === lastQBet)
+ }
+
+ history.push(x)
+ count[x]++
+
+ if(x!=='T'){
+  data.forEach((d,i)=>{
+    if(d.pick) d.results.push(x===d.pick)
+    d.pick=decide(patterns[i])
+  })
+ }
+
+ render()
+}
+
+function undo(){
+ if(!history.length) return
+
+ let x = history.pop()
+ count[x]--
+
+ // ✅ ลบผล Quick View ย้อนหลัง 1 ช่อง (เฉพาะไม่ใช่ T)
+ if(x !== 'T' && qTrack.length){
+   qTrack.pop()
+ }
+
+ if(x!=='T') data.forEach(d=>d.results.pop())
+
+ render()
+}
+
+
+function clearAll(){
+ history = []
+ count = {P:0,B:0,T:0}
+ data = patterns.map(()=>({pick:null,results:[]}))
+
+ // ✅ รีเซ็ต Quick View ด้วย
+ qTrack = []
+ lastQBet = null
+
+ render()
+}
+
+
+
+
+function render(){
+ cp.innerText = count.P
+ cb.innerText = count.B
+ ct.innerText = count.T
+ ctt.innerText = history.length
+
+ beadroad.innerHTML = ""
+
+ history.forEach(x=>{
+  let d = document.createElement("div")
+  d.className = "bead " + x
+  d.innerText = x
+  beadroad.appendChild(d)
+ })
+
+ // 🔥 อัปเดตตาราง (จะคำนวณ Quick View ใหม่)
+ renderTable()
+
+ // ✅ อัปเดตผลถูก/ผิดของ Quick View (ต้องอยู่หลัง renderTable เท่านั้น)
+ renderQResult()
+}
+
+
+function renderTable(){
+ table.innerHTML=""
+
+ let rows=data.map((d,i)=>{
+  let win=d.results.filter(v=>v).length
+  let total=d.results.length
+
+  let direct=total?Math.round(win/total*100):0
+  let reverse=total?100-direct:0
+
+  let effective=Math.max(direct,reverse)
+  let mode=direct>=reverse?"direct":"reverse"
+
+  if(d.pick===null) effective=-1
+
+  return {
+   i,
+   pick:d.pick,
+   results:d.results,
+   effective,
+   mode
+  }
+ })
+
+ // ===== เลือก % สูงสุด =====
+ let blinkRow=rows
+   .filter(r=>r.effective>=0)
+   .sort((a,b)=>b.effective-a.effective)[0]
+
+ rows.forEach(r=>{
+
+  let tr=document.createElement("tr")
+
+  let isBlink=blinkRow&&blinkRow.i===r.i
+  if(isBlink) tr.classList.add("high")
+
+  let betSide = r.pick
+    ? (r.mode==="direct"?r.pick:flip(r.pick))
+    : "NA"
+
+  let row=document.createElement("div")
+  row.className="resultRow"
+
+  r.results.slice(-15).forEach(v=>{
+    let d=document.createElement("div")
+    d.className=v?"ok":"no"
+    d.innerText=v?"✔":"✖"
+    row.appendChild(d)
+  })
+
+  tr.innerHTML=`
+   <td>${patterns[r.i]}</td>
+
+   <td class="${isBlink?'blink':''}">
+     ${r.pick||"NA"}
+   </td>
+
+   <td class="${isBlink?'blink':''}">
+     ${r.effective>=0?r.effective+"%":"0%"}
+   </td>
+
+   <td class="${isBlink?'blink':''}">
+     <div class="${r.mode==='direct'?'mode-direct':'mode-reverse'}">
+       ${r.mode==="direct"?"เล่นตรง":"เล่นสวน"}
+     </div>
+     <div class="bet-info">
+       แทง ${betSide}
+     </div>
+   </td>
+
+   <td></td>
+  `
+
+  tr.children[4].appendChild(row)
+  table.appendChild(tr)
+
+
+
+ })
+
+ // ===== ✅ UPDATE QUICK VIEW (อยู่นอก loop เท่านั้น) =====
+ if(blinkRow){
+
+  let best = blinkRow
+
+  let betSide = best.pick
+    ? (best.mode==="direct"?best.pick:flip(best.pick))
+    : "-"
+
+  // ===== SET ล่าสุดไว้ใช้เทียบ =====
+  lastQBet = betSide
+
+  // ===== UI =====
+  qPattern.innerText = patterns[best.i]
+  qBet.innerText = betSide
+  qPercent.innerText = best.effective + "%"
+
+  qBet.classList.remove("P","B")
+  if(betSide==="P") qBet.classList.add("P")
+  if(betSide==="B") qBet.classList.add("B")
+
+  quickView.classList.add("blink")
+
+}else{
+  lastQBet = null
+  qPattern.innerText = "-"
+  qBet.innerText = "-"
+  qPercent.innerText = "0%"
+
+ }
+}
+
+function renderQResult(){
+
+ qResultGrid.innerHTML = ""
+
+ let win = qTrack.filter(v=>v).length
+ let total = qTrack.length
+ let percent = total ? Math.round(win/total*100) : 0
+
+ qTrack.slice(-70).forEach(v=>{ // จำกัดไม่ให้ยาวเกิน
+   let d=document.createElement("div")
+   d.className="qr " + (v?"ok":"no")
+   d.innerText = v ? "✔" : "✖"
+   qResultGrid.appendChild(d)
+ })
+
+ qResultPercent.innerText = percent + "%"
+}
+
+ 
+render()
+</script>
+</body>
+</html>
