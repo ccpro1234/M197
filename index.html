@@ -105,6 +105,7 @@ button{
  grid-auto-flow:column;
  grid-template-rows:repeat(6,32px);
  grid-auto-columns:32px;
+ overflow-x:auto;
 }
 .bead{
  width:32px;height:32px;border-radius:50%;
@@ -202,6 +203,7 @@ text-shadow: 0 0 5px #ff0000,
 
 .control-panel{
  position:relative;
+ padding-bottom: 20px;
 }
 
 .btn-row{
@@ -211,10 +213,10 @@ text-shadow: 0 0 5px #ff0000,
  flex-wrap:wrap;
 }
 
-/* ===== QUICK VIEW (เล็ก เนียน ลอย ไม่โดนทับ) ===== */
+/* ===== QUICK VIEW (DESKTOP - FLOATING) ===== */
 .quick-view-inline{
- position:fixed;   /* ✅ เปลี่ยนตรงนี้ */
- right:110px;      /* ปรับตามตำแหน่งปุ่ม CLEAR */
+ position:fixed;   /* ลอยบนจอเดสก์ท็อป */
+ right:110px;
  top:10px;
 
  z-index:999;
@@ -259,16 +261,11 @@ text-shadow: 0 0 5px #ff0000,
  font-weight:700;
  color:#facc15;
  letter-spacing:1px;
-
- text-align:center;      /* ✅ จัดกลาง */
- width:100%;             /* ✅ ให้เต็มกล่อง */
+ text-align:center;
+ width:100%;
 }
 
-.control-panel{
- position:relative;   /* ✅ ให้ quick view อิงกรอบนี้ */
-}
-
-/* ===== QUICK RESULT ===== */
+/* ===== QUICK RESULT (DESKTOP) ===== */
 .q-result-box{
  margin-top:8px;
  text-align:center;
@@ -282,7 +279,7 @@ text-shadow: 0 0 5px #ff0000,
 
 .q-result-grid{
  display:grid;
- grid-template-columns:repeat(7,18px); /* ✅ 7 ช่อง */
+ grid-template-columns:repeat(7,18px);
  gap:4px;
  justify-content:center;
 }
@@ -306,6 +303,46 @@ text-shadow: 0 0 5px #ff0000,
  font-size:12px;
  font-weight:700;
  color:#facc15;
+}
+
+/* ===== ✅ MOBILE FIX (เมื่อหน้าจอเล็กกว่า 768px) ===== */
+@media (max-width: 768px) {
+    
+    /* ย้าย Quick View มาติดด้านล่างแถบปุ่ม ไม่ลอยแล้ว */
+    .quick-view-inline {
+        position: relative;
+        right: auto;
+        top: auto;
+        width: 100%;
+        margin-top: 15px; /* ระยะห่างจากปุ่มด้านบน */
+        box-sizing: border-box;
+        justify-content: center; /* จัดกลางแนวนอน */
+    }
+    
+    /* ปรับการแสดงผลให้เป็นแนวนอน */
+    .q-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    /* ปรับ Quick Result ให้กินพื้นที่เต็ม */
+    .q-result-box {
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .q-result-grid {
+        grid-template-columns: repeat(10, 20px); /* เพิ่มจำนวนช่องให้ดูง่ายขึ้น */
+        gap: 3px;
+    }
+    
+    .qr {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 
@@ -337,13 +374,14 @@ text-shadow: 0 0 5px #ff0000,
 
 <!-- ===== วางตรงนี้ ===== -->
 <div class="logo-box">
-  <img src="robotcouth4.png" alt="Robot Couth Logo">
+  <!-- ใส่รูป Placeholder ไว้ก่อน เผื่อไม่มีไฟล์รูปจริง -->
+  <img src="robotcouth4.png" alt="Robot Couth Logo" onerror="this.src='https://picsum.photos/seed/robot/200/200.jpg'">
 </div>
 <!-- ===== จบตำแหน่ง ===== -->
 
 <div class="marquee-box">
   <h5 class="marquee-text">
-    วิเคราะห์เค้าไพ่ By อ.maxma
+    วิเคราะห์เค้าไพ่ v.1 By อ.maxma
   </h5>
 </div>
 
@@ -775,7 +813,7 @@ function renderTable(){
   if(betSide==="P") qBet.classList.add("P")
   if(betSide==="B") qBet.classList.add("B")
 
-  quickView.classList.add("blink")
+  quickView.classList.remove("blink")
 
 }else{
   lastQBet = null
