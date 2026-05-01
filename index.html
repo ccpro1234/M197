@@ -531,7 +531,7 @@ document.getElementById("quickView").style.display = "flex";
 <div class="container" id="app">
 
 <div class="expire-bar">
- วันหมดอายุ : 3 พฤษภาคม พ.ศ. 2569
+ วันหมดอายุ : 15 พฤษภาคม พ.ศ. 2569
 </div>
 
 <!-- ===== วางตรงนี้ ===== -->
@@ -540,7 +540,7 @@ document.getElementById("quickView").style.display = "flex";
 </div>
 
 <div class="app-title">
-  วิเคราะห์เค้าไพ่ V.2+แก้ % Ai Quick
+  วิเคราะห์เค้าไพ่ 14 สายดัก V.2+Ai Quick
 </div>
 <!-- ===== จบตำแหน่ง ===== -->
 
@@ -595,7 +595,7 @@ document.getElementById("quickView").style.display = "flex";
 
 <script>
 /* ===== EXPIRE SYSTEM ===== */
-const expireDate = new Date("2026-05-03T23:59:59")
+const expireDate = new Date("2026-05-15T23:59:59")
 
 if(new Date() > expireDate){
  document.getElementById("lockScreen").style.display="flex"
@@ -643,7 +643,7 @@ let count={P:0,B:0,T:0}
 
 
 const patterns=[
-"ตามยาว","ตัดยาว","ปิงปอง","2 ตัด 1","2 ตัด 2","แรงเหวี่ยงสั้น","3 ตัด 3",
+"ตามยาว","ตัดยาว","ปิงปอง","2 ตัด 1","2 ตัด 2","แรงเหวี่ยงสั้น","แรงเฉลี่ยกลับตัว","3 ตัด 3",
 "3-1-3","มังกร","หลอกมังกร","สลับคู่","ผสม / NA",
 "หลอก 2 ครั้งแล้วสวน",
 
@@ -708,6 +708,32 @@ case "2 ตัด 2":
 
   // ต่าง → เอาตัวก่อนหน้า
   return prev
+
+
+  case "แรงเฉลี่ยกลับตัว":
+{
+  let h = nonTie()
+
+  // 🔥 บังคับมีค่าเสมอ
+  if (h.length < 3) return 'B'
+
+  let last5 = h.slice(-5)
+
+  let p = last5.filter(x => x === 'P').length
+  let b = last5.filter(x => x === 'B').length
+
+  let last = h[h.length - 1]
+
+  if (p > b) {
+    return 'B'
+  }
+
+  if (b > p) {
+    return 'P'
+  }
+
+  return last === 'P' ? 'B' : 'P'
+}
 
 
 case "3 ตัด 3": return run.len===3?flip(run.side):null
