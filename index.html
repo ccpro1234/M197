@@ -447,7 +447,7 @@ document.getElementById("quickView").style.display = "flex";
 
 .app-title{
   text-align:center;
-  font-size:15px;
+  font-size:11px;
   font-weight:800;
   letter-spacing:2px;
   margin-bottom:15px;
@@ -531,7 +531,7 @@ document.getElementById("quickView").style.display = "flex";
 <div class="container" id="app">
 
 <div class="expire-bar">
- วันหมดอายุ : 15 พฤษภาคม พ.ศ. 2569
+ วันหมดอายุ : 29 พฤษภาคม พ.ศ. 2569
 </div>
 
 <!-- ===== วางตรงนี้ ===== -->
@@ -540,7 +540,7 @@ document.getElementById("quickView").style.display = "flex";
 </div>
 
 <div class="app-title">
-  วิเคราะห์เค้าไพ่ 14 สายดัก V.2+Ai Quick
+  วิเคราะห์เค้าไพ่ 15 สายดัก(เพิ่ม แรงสวนอคติ) V.2+Ai Quick
 </div>
 <!-- ===== จบตำแหน่ง ===== -->
 
@@ -595,7 +595,7 @@ document.getElementById("quickView").style.display = "flex";
 
 <script>
 /* ===== EXPIRE SYSTEM ===== */
-const expireDate = new Date("2026-05-15T23:59:59")
+const expireDate = new Date("2026-05-29T23:59:59")
 
 if(new Date() > expireDate){
  document.getElementById("lockScreen").style.display="flex"
@@ -642,12 +642,25 @@ let count={P:0,B:0,T:0}
 
 
 
-const patterns=[
-"ตามยาว","ตัดยาว","ปิงปอง","2 ตัด 1","2 ตัด 2","แรงเหวี่ยงสั้น","แรงเฉลี่ยกลับตัว","3 ตัด 3",
-"3-1-3","มังกร","หลอกมังกร","สลับคู่","ผสม / NA",
-"หลอก 2 ครั้งแล้วสวน",
+const patterns = [
+  "ตามยาว",
+  "ตัดยาว",
+  "ปิงปอง",
+  "2 ตัด 1",
+  "2 ตัด 2",
+  "แรงสวนอคติ",
+  "แรงเหวี่ยงสั้น",
+  "แรงเฉลี่ยกลับตัว",
+  "3 ตัด 3",
+  "3-1-3",
+  "มังกร",
+  "หลอกมังกร",
+  "สลับคู่",
+  "ผสม / NA",
+  "หลอก 2 ครั้งแล้วสวน"
+];
 
-]
+
 let data=patterns.map(()=>({pick:null,results:[]}))
 
 function nonTie(){return history.filter(x=>x!=='T')}
@@ -663,6 +676,25 @@ function runCount(){
  return {side,len}
 }
 
+function biasFlipEngine() {
+  let h = history.filter(x => x !== 'T');
+
+  // 🔥 บังคับออกทุกตา
+  if (h.length === 0) return 'B';
+
+  let last = h[h.length - 1];
+  let prev = h[h.length - 2];
+
+  // 🔥 ถ้า 2 ตาซ้ำ = ตลาด overconfidence → สวน
+  if (h.length >= 2 && last === prev) {
+    return last === 'B' ? 'P' : 'B';
+  }
+
+  // 🔥 ถ้าไม่ซ้ำ → สวนตัวล่าสุดตรง ๆ
+  return last === 'B' ? 'P' : 'B';
+}
+
+
 function decide(name){
  let run=runCount()
  let h=nonTie()
@@ -676,65 +708,65 @@ function decide(name){
   case "2 ตัด 1": return run.len===2?flip(run.side):null
 
 case "2 ตัด 2":
-  if(h.length >= 4){
-    let last4 = h.slice(-4)
-
-    // BBPP → แทง B
-    if(last4[0]==='B' && last4[1]==='B' && last4[2]==='P' && last4[3]==='P')
-      return 'B'
-
-    // PPBB → แทง P
-    if(last4[0]==='P' && last4[1]==='P' && last4[2]==='B' && last4[3]==='B')
-      return 'P'
-  }
-  return null
-
-  case "แรงเหวี่ยงสั้น":
-
-  let h6 = nonTie()
-
-  if(h6.length < 2){
-    // 🔥 บังคับมีค่า → เปิดเกม
-    return 'B'
-  }
-
-  let last = h6[h6.length-1]
-  let prev = h6[h6.length-2]
-
-  // เหมือน → ตาม
-  if(last === prev){
-    return last
-  }
-
-  // ต่าง → เอาตัวก่อนหน้า
-  return prev
-
-
-  case "แรงเฉลี่ยกลับตัว":
 {
-  let h = nonTie()
+  let h = nonTie();
 
-  // 🔥 บังคับมีค่าเสมอ
-  if (h.length < 3) return 'B'
+  if(h.length >= 4){
+    let last4 = h.slice(-4);
 
-  let last5 = h.slice(-5)
+    if(last4[0]==='B' && last4[1]==='B' && last4[2]==='P' && last4[3]==='P')
+      return 'B';
 
-  let p = last5.filter(x => x === 'P').length
-  let b = last5.filter(x => x === 'B').length
-
-  let last = h[h.length - 1]
-
-  if (p > b) {
-    return 'B'
+    if(last4[0]==='P' && last4[1]==='P' && last4[2]==='B' && last4[3]==='B')
+      return 'P';
   }
-
-  if (b > p) {
-    return 'P'
-  }
-
-  return last === 'P' ? 'B' : 'P'
+  return null;
 }
 
+case "แรงสวนอคติ":
+{
+  return biasFlipEngine();
+}
+
+case "แรงเหวี่ยงสั้น":
+{
+  let h6 = nonTie();
+
+  // 🔥 บังคับมีค่า → เปิดเกม
+  if (h6.length < 2) return 'B';
+
+  let last = h6[h6.length - 1];
+  let prev = h6[h6.length - 2];
+
+  // 🔁 เหมือน → ตาม
+  if (last === prev) {
+    return last;
+  }
+
+  // 🔁 ต่าง → เอาตัวก่อนหน้า
+  return prev;
+}
+
+case "แรงเฉลี่ยกลับตัว":
+{
+  let h = nonTie();
+
+  // 🔥 บังคับมีค่าเสมอ
+  if (h.length < 3) return 'B';
+
+  let last5 = h.slice(-5);
+
+  let p = last5.filter(x => x === 'P').length;
+  let b = last5.filter(x => x === 'B').length;
+
+  let last = h[h.length - 1];
+
+  if (p > b) return 'B';
+  if (b > p) return 'P';
+
+  // เสมอ → สวนตัวล่าสุด
+  return last === 'P' ? 'B' : 'P';
+}
 
 case "3 ตัด 3": return run.len===3?flip(run.side):null
 
