@@ -531,7 +531,7 @@ document.getElementById("quickView").style.display = "flex";
 <div class="container" id="app">
 
 <div class="expire-bar">
- วันหมดอายุ : 29 พฤษภาคม พ.ศ. 2569
+ วันหมดอายุ : 10 มิถุนายน พ.ศ. 2569
 </div>
 
 <!-- ===== วางตรงนี้ ===== -->
@@ -540,7 +540,7 @@ document.getElementById("quickView").style.display = "flex";
 </div>
 
 <div class="app-title">
-  วิเคราะห์เค้าไพ่ 15 สายดัก(เพิ่ม แรงสวนอคติ) V.2+Ai Quick
+  วิเคราะห์เค้าไพ่ 16 สายดัก(เพิ่ม แรงเบรกกลับจังหวะ) V.2+Ai Quick
 </div>
 <!-- ===== จบตำแหน่ง ===== -->
 
@@ -595,7 +595,7 @@ document.getElementById("quickView").style.display = "flex";
 
 <script>
 /* ===== EXPIRE SYSTEM ===== */
-const expireDate = new Date("2026-05-29T23:59:59")
+const expireDate = new Date("2026-06-11T23:59:59")
 
 if(new Date() > expireDate){
  document.getElementById("lockScreen").style.display="flex"
@@ -649,6 +649,7 @@ const patterns = [
   "2 ตัด 1",
   "2 ตัด 2",
   "แรงสวนอคติ",
+  "แรงเบรกกลับจังหวะ",
   "แรงเหวี่ยงสั้น",
   "แรงเฉลี่ยกลับตัว",
   "3 ตัด 3",
@@ -727,7 +728,53 @@ case "แรงสวนอคติ":
 {
   return biasFlipEngine();
 }
+case "แรงเบรกกลับจังหวะ":
+{
+  let h = nonTie();
 
+  // 🔥 เปิดเกมทันที
+  if(h.length < 2){
+    return 'B';
+  }
+
+  let last = h[h.length - 1];
+  let prev = h[h.length - 2];
+
+  // ===== นับ streak ล่าสุด =====
+  let streak = 1;
+
+  for(let i=h.length-2; i>=0; i--){
+    if(h[i] === last){
+      streak++;
+    }else{
+      break;
+    }
+  }
+
+  // =====================================
+  // 🔥 CORE LOGIC:
+  // เจอมังกรยาว → รอเบรก → ตามตัวเบรก
+  // =====================================
+
+  // เช่น BBBP → แทง P
+  // เช่น PPPB → แทง B
+
+  if(streak === 1){
+
+    // ตัวล่าสุดคือ "ตัวเบรก"
+    return last;
+  }
+
+  // =====================================
+  // 🔥 ถ้ายังไม่เบรก
+  // ให้สวน trend รอจังหวะกลับ
+  // =====================================
+
+  // BBB → แทง P
+  // PPP → แทง B
+
+  return flip(last);
+}
 case "แรงเหวี่ยงสั้น":
 {
   let h6 = nonTie();
